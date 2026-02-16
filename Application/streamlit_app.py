@@ -57,21 +57,53 @@ st.markdown("""
 def load_data():
     """Load and prepare all necessary data"""
     try:
-        # Load sentiment data
-        sentiment_df = pd.read_csv('../Data/fear_greed_index.csv')
+        # Load sentiment data - try multiple possible locations
+        sentiment_paths = [
+            'Data/fear_greed_index.csv',
+            'fear_greed_index.csv',
+            '../Data/fear_greed_index.csv'
+        ]
+        
+        sentiment_df = None
+        for path in sentiment_paths:
+            try:
+                sentiment_df = pd.read_csv(path)
+                break
+            except:
+                continue
+        
+        if sentiment_df is None:
+            st.error("Could not load fear_greed_index.csv. Please ensure it exists in Data/ folder or root directory.")
+            return None, None, None, None
+            
         sentiment_df['date'] = pd.to_datetime(sentiment_df['date'])
         sentiment_df['is_greed'] = sentiment_df['classification'].isin(['Greed', 'Extreme Greed']).astype(int)
         sentiment_df['is_fear'] = sentiment_df['classification'].isin(['Fear', 'Extreme Fear']).astype(int)
         
-        # Load trader data (try CSV first, then Excel)
-        try:
-            trader_df = pd.read_csv('../Data/trader_data.csv')
-        except:
+        # Load trader data - try multiple possible locations and formats
+        trader_paths = [
+            ('Data/trader_data.csv', 'csv'),
+            ('trader_data.csv', 'csv'),
+            ('../Data/trader_data.csv', 'csv'),
+            ('Data/trader_data.xlsx', 'excel'),
+            ('trader_data.xlsx', 'excel'),
+            ('../Data/trader_data.xlsx', 'excel')
+        ]
+        
+        trader_df = None
+        for path, file_type in trader_paths:
             try:
-                trader_df = pd.read_excel('trader_data.xlsx')
+                if file_type == 'csv':
+                    trader_df = pd.read_csv(path)
+                else:
+                    trader_df = pd.read_excel(path)
+                break
             except:
-                st.error("Could not load trader data. Please ensure 'trader_data.csv' or 'trader_data.xlsx' exists.")
-                return None, None, None, None
+                continue
+        
+        if trader_df is None:
+            st.error("Could not load trader data. Please ensure trader_data.csv or trader_data.xlsx exists in Data/ folder or root directory.")
+            return None, None, None, None
         
         # Process trader data
         trader_df['trade_datetime'] = pd.to_datetime(trader_df['Timestamp'], unit='ms', errors='coerce')
@@ -918,9 +950,10 @@ def main():
     st.markdown("---")
     st.markdown("""
     <div style='text-align: center; color: gray; padding: 2rem;'>
-    <b>Trader Performance vs Market Sentiment Analysis Dashboard</b>
+    <b>Trader Performance vs Market Sentiment Analysis Dashboard</b><br>
+    Built with Streamlit | Data Science Internship Assignment | Primetrade.ai
     </div>
     """, unsafe_allow_html=True)
 
 if __name__ == "__main__":
-    main()
+    main()  
