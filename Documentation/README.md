@@ -234,7 +234,7 @@ jupyter==1.0.0
 
 ### Streamlit Cloud
 1. Push to GitHub
-2. Visit [share.streamlit.io](https://share.streamlit.io)
+2. Visit [share.streamlit.io](https://trader-sentiment.streamlit.app/)
 3. Deploy from repository
 4. Set main file: `streamlit_app.py`
 
