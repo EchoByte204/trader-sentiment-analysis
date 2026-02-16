@@ -58,14 +58,14 @@ def load_data():
     """Load and prepare all necessary data"""
     try:
         # Load sentiment data
-        sentiment_df = pd.read_csv('Data/fear_greed_index.csv')
+        sentiment_df = pd.read_csv('../Data/fear_greed_index.csv')
         sentiment_df['date'] = pd.to_datetime(sentiment_df['date'])
         sentiment_df['is_greed'] = sentiment_df['classification'].isin(['Greed', 'Extreme Greed']).astype(int)
         sentiment_df['is_fear'] = sentiment_df['classification'].isin(['Fear', 'Extreme Fear']).astype(int)
         
         # Load trader data (try CSV first, then Excel)
         try:
-            trader_df = pd.read_csv('Data/trader_data.csv')
+            trader_df = pd.read_csv('../Data/trader_data.csv')
         except:
             try:
                 trader_df = pd.read_excel('trader_data.xlsx')
